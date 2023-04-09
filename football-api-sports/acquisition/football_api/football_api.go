@@ -1,9 +1,9 @@
 package football_api
 
 import (
-	"net/http"
-	"log"
 	"io/ioutil"
+	"log"
+	"net/http"
 	"os"
 )
 
@@ -21,7 +21,7 @@ func buildRequest(endpoint string) *http.Request {
 }
 
 func executeRequest(req *http.Request) []byte {
-	client := &http.Client {}
+	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
 		log.Fatal(err)
