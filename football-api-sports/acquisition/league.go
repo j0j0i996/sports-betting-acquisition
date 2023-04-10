@@ -3,6 +3,7 @@ package acquisition
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 type LeagueResponse struct {
@@ -30,6 +31,7 @@ func GetLeagues() []LeagueItem {
 	raw_data := GetData("leagues")
 	var res LeagueResponse
 	json.Unmarshal(raw_data, &res)
+	fmt.Println(res)
 
 	return res.LeagueList
 }

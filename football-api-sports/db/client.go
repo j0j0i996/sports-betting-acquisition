@@ -14,6 +14,7 @@ func GetClient() *gorm.DB {
 		panic("failed to connect database")
 	}
 	db.AutoMigrate(&League{})
+	db.AutoMigrate(&Team{})
 	db.AutoMigrate(&Fixture{})
 
 	return db

@@ -17,17 +17,11 @@ type LeagueDescription struct {
 	Country string
 }
 
-func syncFixtures(year int, league LeagueDescription) {
+func syncFixtures(year int, league_id uint) {
 	// fetches all fixtures from a specific year and league and stores them in db
 
-	// Get League ID
-	id, err := acquisition.GetLeagueId(league.Name, league.Country)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// Get Fixtures as list
-	fixture_list := acquisition.GetFixtures(id, year)
+	fixture_list := acquisition.GetFixtures(league_id, year)
 
 	// transform and insert all fixtuers
 	for _, fixture := range fixture_list {
@@ -58,18 +52,48 @@ func syncLeagues() {
 
 }
 
+func syncTeams(year int, league_id uint) {
+	// fetches all leagues from a specific year and stores them in db
+
+	// Get Leagues as list
+	team_list := acquisition.GetTeams(league_id, year)
+
+	// transform and insert all fixtuers
+	for _, team := range team_list {
+		insertTeam := transform.TeamApiModelToDbModel(team)
+
+		// Insert (Do nothing on conflict)
+		db_client.Clauses(clause.OnConflict{DoNothing: true}).Create(&insertTeam)
+	}
+
+}
+
 func main() {
 
-	// prozess Leagues
-	syncLeagues()
+	boolSyncLeagues := true
+	boolSyncTeams := true
 
-	// prozess Fixtures
+	// prozess Leagues
+	if boolSyncLeagues {
+		syncLeagues()
+	}
+
+	// prozess Fixturesteam
 	years := [1]int{2022}
 	leagues := [1]LeagueDescription{{Name: "Serie A", Country: "Italy"}}
 
 	for _, year := range years {
 		for _, league := range leagues {
-			syncFixtures(year, league)
+			// Get League ID
+			league_id, err := acquisition.GetLeagueId(league.Name, league.Country)
+			if err != nil {
+				log.Fatal(err)
+			}
+			syncTeams(year, league_id)
+			if boolSyncTeams {
+				syncTeams(year, league_id)
+			}
+			syncFixtures(year, league_id)
 		}
 	}
 

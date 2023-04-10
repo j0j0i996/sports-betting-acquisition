@@ -30,11 +30,11 @@ type FixtureLeague struct {
 }
 
 type FixtureTeams struct {
-	Home Team
-	Away Team
+	Home FixtureTeam
+	Away FixtureTeam
 }
 
-type Team struct {
+type FixtureTeam struct {
 	Id     uint
 	Name   string
 	Winner bool
@@ -57,7 +57,5 @@ func GetFixtures(league_id uint, season int) []FixtureItem {
 	raw_data := GetData("fixtures", parameter_map)
 	json.Unmarshal(raw_data, &res)
 
-	fixture_list := res.FixtureList
-
-	return fixture_list
+	return res.FixtureList
 }
