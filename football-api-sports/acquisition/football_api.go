@@ -1,4 +1,4 @@
-package football_api
+package acquisition
 
 import (
 	"io/ioutil"
@@ -16,7 +16,7 @@ func buildRequest(endpoint string) *http.Request {
 	if err != nil {
 		log.Fatal(err)
 	}
-	req.Header.Add("x-apisports-key", os.Getenv("xapisportskey"))
+	req.Header.Add("x-apisports-key", os.Getenv("XAPISPORTSKEY"))
 	return req
 }
 

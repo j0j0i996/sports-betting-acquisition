@@ -1,12 +1,11 @@
-package interfaces
+package db
 
 import (
 	"database/sql/driver"
 	"errors"
 	"time"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"github.com/tee8z/nullable"
 )
 
 type Result string
@@ -15,6 +14,7 @@ const (
 	Home Result = "home"
 	Away Result = "away"
 	Draw Result = "draw"
+	TBD  Result = "tbd"
 )
 
 func (r *Result) Scan(value interface{}) error {
@@ -38,23 +38,13 @@ func (r Result) Value() (driver.Value, error) {
 }
 
 type Fixture struct {
-	Id            uint      `gorm:"primary_key`
-	Time          time.Time `gorm:"not null; index`
-	HomeTeamId    uint      `gorm:"not null; index`
-	AwayTeamId    uint      `gorm:"not null; index`
-	HomeTeamGoals uint
-	AwayTeamGoals uint
+	Id            uint      `gorm:"primary_key"`
+	Time          time.Time `gorm:"not null; index"`
+	HomeTeamId    uint      `gorm:"not null; index"`
+	AwayTeamId    uint      `gorm:"not null; index"`
+	HomeTeamGoals nullable.Int8
+	AwayTeamGoals nullable.Int8
 	Result        Result `sql:"type:result"`
-}
-
-func GetClient() *gorm.DB {
-	dsn := "host=localhost user=postgres password=postgres dbname=postgres port=5434"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
-	db.AutoMigrate(&Fixture{})
-
-	return db
-
+	LeagueId      uint   `gorm:"not null; index"`
+	League        League `gorm:"foreignKey:LeagueId"`
 }

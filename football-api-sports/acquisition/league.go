@@ -1,12 +1,11 @@
-package leagues
+package acquisition
 
 import (
 	"encoding/json"
 	"errors"
-	"fas/acquisition/football_api"
 )
 
-type Response struct {
+type LeagueResponse struct {
 	LeagueList []LeagueItem `json:"response"`
 }
 
@@ -16,7 +15,7 @@ type LeagueItem struct {
 }
 
 type League struct {
-	Id   int
+	Id   uint
 	Name string
 }
 
@@ -26,17 +25,17 @@ type Country struct {
 }
 
 // GetLeages TODO
-func getLeagues() []LeagueItem {
+func GetLeagues() []LeagueItem {
 	// Get Data from API
-	raw_data := football_api.GetData("leagues")
-	var res Response
+	raw_data := GetData("leagues")
+	var res LeagueResponse
 	json.Unmarshal(raw_data, &res)
 
 	return res.LeagueList
 }
 
-func GetLeagueId(name string, country string) (int, error) {
-	league_list := getLeagues()
+func GetLeagueId(name string, country string) (uint, error) {
+	league_list := GetLeagues()
 	for _, item := range league_list {
 		if item.League.Name == name && item.Country.Name == country {
 			return item.League.Id, nil

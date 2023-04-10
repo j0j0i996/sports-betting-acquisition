@@ -1,27 +1,32 @@
-package fixtures
+package acquisition
 
 import (
 	"encoding/json"
-	"fas/acquisition/football_api"
 	"fmt"
-	"sort"
 	"time"
+
+	"github.com/tee8z/nullable"
 )
 
-type Response struct {
+type FixtureResponse struct {
 	FixtureList []FixtureItem `json:"response"`
 }
 
 type FixtureItem struct {
-	Meta  Meta `json:"fixture"`
-	Teams FixtureTeams
-	Goals Goals
+	Meta   Meta `json:"fixture"`
+	Teams  FixtureTeams
+	Goals  Goals
+	League FixtureLeague
 }
 
 type Meta struct {
 	Id     uint
 	Date   time.Time
 	Status Status
+}
+
+type FixtureLeague struct {
+	Id uint
 }
 
 type FixtureTeams struct {
@@ -36,8 +41,8 @@ type Team struct {
 }
 
 type Goals struct {
-	Home int
-	Away int
+	Home nullable.Int8
+	Away nullable.Int8
 }
 
 type Status struct {
@@ -45,19 +50,14 @@ type Status struct {
 }
 
 // GetLeages TODO
-func GetFixtures(league_id int, season int) []FixtureItem {
-	var res Response
+func GetFixtures(league_id uint, season int) []FixtureItem {
+	var res FixtureResponse
 	// Get Data from API
 	var parameter_map = map[string]string{"season": fmt.Sprint(season), "league": fmt.Sprint(league_id)}
-	raw_data := football_api.GetData("fixtures", parameter_map)
+	raw_data := GetData("fixtures", parameter_map)
 	json.Unmarshal(raw_data, &res)
 
 	fixture_list := res.FixtureList
-
-	// sort by date
-	sort.SliceStable(fixture_list, func(i, j int) bool {
-		return fixture_list[i].Meta.Date.Before(fixture_list[j].Meta.Date)
-	})
 
 	return fixture_list
 }
