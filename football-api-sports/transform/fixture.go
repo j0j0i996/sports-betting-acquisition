@@ -2,25 +2,26 @@ package transform
 
 import (
 	acquisition "fas/acquisition"
-	db "fas/db"
+
+	model "db/model"
 )
 
-func FixtureApiModelToDbModel(api_fixture acquisition.FixtureItem) db.Fixture {
+func FixtureApiModelToDbModel(api_fixture acquisition.FixtureItem) model.Fixture {
 
 	// determine result
-	var result db.Result
+	var result model.Result
 	if api_fixture.Goals.Home.Get() == nil {
-		result = db.TBD
+		result = model.TBD
 	} else if *api_fixture.Goals.Home.Get() > *api_fixture.Goals.Away.Get() {
-		result = db.Home
+		result = model.Home
 	} else if *api_fixture.Goals.Home.Get() == *api_fixture.Goals.Away.Get() {
-		result = db.Draw
+		result = model.Draw
 	} else {
-		result = db.Away
+		result = model.Away
 	}
 
 	// Build db model
-	return db.Fixture{
+	return model.Fixture{
 		Id:            api_fixture.Meta.Id,
 		Time:          api_fixture.Meta.Date,
 		HomeTeamId:    api_fixture.Teams.Home.Id,

@@ -1,8 +1,26 @@
 # football-data-analysis
 
-This package acquires and prepares data which can be used to analyze football data and forecast results
+This package acquires data from various datasources on football and writes them into a db.
 
-export xapisportskey=
-export db='host=localhost user=postgres password=postgres dbname=postgres port=5434'
+## run code
 
-source ~/.bash_profile
+### create environment variables
+
+```bash
+export XAPISPORTSKEY=[YOUR-API-KEY]
+export SPORTSBETTINGDB='host=localhost user=postgres password=postgres dbname=postgres port=5434'
+```
+
+## host local database
+
+```bash
+docker compose up
+```
+
+### run service
+
+```bash
+cd football-api-sports
+go install
+go run .
+```

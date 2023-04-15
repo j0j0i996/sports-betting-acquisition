@@ -26,7 +26,6 @@ func GetTeams(league_id uint, season int) []TeamItem {
 	var parameter_map = map[string]string{"season": fmt.Sprint(season), "league": fmt.Sprint(league_id)}
 	raw_data := GetData("teams", parameter_map)
 	json.Unmarshal(raw_data, &res)
-	fmt.Println(res)
 
 	return res.TeamList
 }

@@ -1,16 +1,18 @@
 package main
 
 import (
-	acquisition "fas/acquisition"
-	db "fas/db"
-	transform "fas/transform"
 	"log"
+
+	acquisition "fas/acquisition"
+	transform "fas/transform"
+
+	"db/client"
 
 	"gorm.io/gorm/clause"
 )
 
 // Connect to DB
-var db_client = db.GetClient()
+var db_client = client.GetClient()
 
 type LeagueDescription struct {
 	Name    string
@@ -28,6 +30,7 @@ func syncFixtures(year int, league_id uint) {
 		insertFixture := transform.FixtureApiModelToDbModel(fixture)
 
 		// Insert (Update time, goals and result on conflict)
+		// Todo: Allow batch insert
 		db_client.Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "id"}},
 			DoUpdates: clause.AssignmentColumns([]string{"time", "home_team_goals", "away_team_goals", "result"}),
@@ -79,11 +82,24 @@ func main() {
 	}
 
 	// prozess Fixturesteam
+	//years := [6]int{2017, 2018, 2019, 2020, 2021, 2022}
 	years := [1]int{2022}
-	leagues := [1]LeagueDescription{{Name: "Serie A", Country: "Italy"}}
+	/*
+		leagues := [6]LeagueDescription{
+			{Name: "UEFA Champions League", Country: "World"},
+			{Name: "Serie A", Country: "Italy"},
+			{Name: "UEFA Europa League", Country: "World"},
+			{Name: "Bundesliga", Country: "Germany"},
+			{Name: "2. Bundesliga", Country: "Germany"},
+			{Name: "Premier League", Country: "England"},
+		}
+	*/
+	leagues := [1]LeagueDescription{
+		{Name: "UEFA Champions League", Country: "World"},
+	}
 
-	for _, year := range years {
-		for _, league := range leagues {
+	for _, league := range leagues {
+		for _, year := range years {
 			// Get League ID
 			league_id, err := acquisition.GetLeagueId(league.Name, league.Country)
 			if err != nil {

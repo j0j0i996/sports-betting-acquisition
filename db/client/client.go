@@ -1,10 +1,12 @@
-package db
+package client
 
 import (
 	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	model "db/model"
 )
 
 func GetClient() *gorm.DB {
@@ -13,9 +15,9 @@ func GetClient() *gorm.DB {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	db.AutoMigrate(&League{})
-	db.AutoMigrate(&Team{})
-	db.AutoMigrate(&Fixture{})
+	db.AutoMigrate(&model.League{})
+	db.AutoMigrate(&model.Team{})
+	db.AutoMigrate(&model.Fixture{})
 
 	return db
 

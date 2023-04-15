@@ -1,9 +1,10 @@
-module fas
+module db
 
 go 1.19
 
 require (
 	github.com/tee8z/nullable v1.0.5
+	gorm.io/driver/postgres v1.5.0
 	gorm.io/gorm v1.25.0
 )
 
@@ -15,5 +16,4 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
-	gorm.io/driver/postgres v1.5.0 // indirect
 )
