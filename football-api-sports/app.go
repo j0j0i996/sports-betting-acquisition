@@ -95,7 +95,7 @@ func main() {
 		}
 	*/
 	leagues := [1]LeagueDescription{
-		{Name: "UEFA Champions League", Country: "World"},
+		{Name: "Bundesliga", Country: "Germany"},
 	}
 
 	for _, league := range leagues {

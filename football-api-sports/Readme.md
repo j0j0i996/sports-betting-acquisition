@@ -24,3 +24,5 @@ cd football-api-sports
 go install
 go run .
 ```
+
+export XAPISPORTSKEY=[YOUR-API-KEY]
