@@ -2,19 +2,20 @@ package acquisition
 
 import (
 	"log"
+	"math"
 	"reflect"
 	"strconv"
 	"time"
 )
 
 type FixtureItem struct {
-	Time     time.Time
+	Date     time.Time
 	Div      string
 	HomeTeam string
 	AwayTeam string
-	B365H    float32
-	B365A    float32
-	B365D    float32
+	B365H    float64
+	B365A    float64
+	B365D    float64
 }
 
 // FetchData requests csv from URL and saves / returns it as string
@@ -49,7 +50,7 @@ func modelData(data [][]string) []FixtureItem {
 	idx_map := make(map[string]int)
 
 	// Get column names to keep
-	cols_to_keep := getFieldNamesFromFixtureItem(FixtureItem{})
+	cols_to_keep := getFieldNamesOfFixtureItem(FixtureItem{})
 
 	// Find column number of cols_to_keep in returned csv
 	for index, element := range data[0] {
@@ -72,16 +73,23 @@ func modelData(data [][]string) []FixtureItem {
 
 			if f.IsValid() {
 				if f.CanSet() {
-					if f.Type().String() == "float32" {
+					if f.Type().String() == "float64" {
 						float_number, err := strconv.ParseFloat(data[i][index], 32)
 						if err != nil {
 							log.Fatalln("Could not convert String to Float")
 						}
-						f.SetFloat(float_number)
+						f.SetFloat(math.Floor(float_number*10000) / 10000)
 					} else if f.Type().String() == "string" {
 						f.SetString(data[i][index])
+					} else if f.Type().String() == "time.Time" {
+						parsed_time, err := time.Parse("02/01/2006", data[i][index])
+						if err != nil {
+							panic(err)
+						}
+						f.Set(reflect.ValueOf(parsed_time))
+						//f.Set(reflect.ValueOf(data[i][index]))
 					} else {
-						log.Println("Unknown Field type")
+						log.Println("Unknown Field type " + f.Type().String())
 					}
 				} else {
 					log.Fatalln("Field is not settable")

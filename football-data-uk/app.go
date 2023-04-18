@@ -24,13 +24,15 @@ func main() {
 	// acquire, transform and load data
 	acquired_fixtures := acquisition.GetHistoricData("2223", "Bundesliga")
 	for _, fixture := range acquired_fixtures {
-		transform.HistoricOddsSourceModelToDbModel(fixture)
-		//fmt.Println(historic_odds)
+		historic_odds := transform.HistoricOddsSourceModelToDbModel(fixture)
 		/*
 			db_client.Clauses(clause.OnConflict{
 				Columns:   []clause.Column{{Name: "fixture_id"}},
 				UpdateAll: true,
 			}).Create(&historic_odds)
 		*/
+		// TODO create composite index on bookmaker
+		// TODO round before writing
+		db_client.Create(&historic_odds)
 	}
 }

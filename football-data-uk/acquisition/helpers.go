@@ -1,9 +1,11 @@
 package acquisition
 
-import "reflect"
+import (
+	"reflect"
+)
 
 // Returns all
-func getFieldNamesFromFixtureItem(fixture FixtureItem) []string {
+func getFieldNamesOfFixtureItem(fixture FixtureItem) []string {
 	t := reflect.TypeOf(fixture)
 	var fieldNames []string
 	for i := 0; i < t.NumField(); i++ {

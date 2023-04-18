@@ -1,7 +1,6 @@
 package getters
 
 import (
-	client "db/client"
 	model "db/model"
 	"errors"
 	"fmt"
@@ -12,15 +11,14 @@ import (
 )
 
 // Get teams from db and cache
-var cache_team_list []model.Team
+var cache_teams []model.Team
 
 func GetTeamsInDB() []model.Team {
-	if len(cache_team_list) == 0 {
+	if len(cache_teams) == 0 {
 		fmt.Println("Get Data from db")
-		var db_client = client.GetClient()
-		db_client.Model(&model.Team{}).Find(&cache_team_list)
+		db_client.Model(&model.Team{}).Find(&cache_teams)
 	}
-	return cache_team_list
+	return cache_teams
 }
 
 // Find team in db with most similar team name to input string

@@ -6,7 +6,7 @@ type HistoricOdds struct {
 	Fixture     Fixture   `gorm:"foreignKey:FixtureId"`
 	BookmakerId uint      `gorm:"not null; index"`
 	Bookmaker   Bookmaker `gorm:"foreignKey:BookmakerId"`
-	HomeOdds    float32   `gorm:"not null"`
-	DrawOdds    float32   `gorm:"not null"`
-	AwayOdds    float32   `gorm:"not null"`
+	HomeOdds    float64   `gorm:"not null"`
+	DrawOdds    float64   `gorm:"not null"`
+	AwayOdds    float64   `gorm:"not null"`
 }
