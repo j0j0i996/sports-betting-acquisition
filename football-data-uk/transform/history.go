@@ -5,26 +5,27 @@ import (
 	"db/model"
 	db_model "db/model"
 	acquisition "fdu/acquisition"
-	"log"
 	"reflect"
+
+	"github.com/pkg/errors"
 )
 
-func HistoricOddsSourceModelToDbModel(source_fixture_item acquisition.FixtureItem) []db_model.HistoricOdds {
+func HistoricOddsSourceModelToDbModel(source_fixture_item acquisition.FixtureItem) ([]db_model.HistoricOdds, error) {
 
 	// get team ids:
 	home, err := db_getters.GetTeamFromSimilarTeamName(source_fixture_item.HomeTeam)
 	if err != nil {
-		log.Fatal("did not find similar team name: " + source_fixture_item.HomeTeam + ". Error: " + err.Error())
+		return []db_model.HistoricOdds{}, errors.Wrap(err, "finding similar team name for: "+source_fixture_item.HomeTeam)
 	}
 	away, err := db_getters.GetTeamFromSimilarTeamName(source_fixture_item.AwayTeam)
 	if err != nil {
-		log.Fatal("did not find similar team name " + source_fixture_item.AwayTeam + ". Error: " + err.Error())
+		return []db_model.HistoricOdds{}, errors.Wrap(err, "finding similar team name for: "+source_fixture_item.AwayTeam)
 	}
 
 	// find fixture
 	fixture, err := db_getters.FindFixtureFromTeamIdsAndTimestampInDB(source_fixture_item.Date, home, away)
 	if err != nil {
-		log.Fatal("did not close fixture time similar for " + home.Name + " vs. " + away.Name + ". Error: " + err.Error())
+		return []db_model.HistoricOdds{}, errors.Wrap(err, "did not close fixture time similar for "+home.Name+" vs. "+away.Name)
 	}
 
 	// convert to one entry per bookmaker
@@ -42,5 +43,5 @@ func HistoricOddsSourceModelToDbModel(source_fixture_item acquisition.FixtureIte
 		historic_odds = append(historic_odds, new_entry)
 	}
 
-	return historic_odds
+	return historic_odds, nil
 }

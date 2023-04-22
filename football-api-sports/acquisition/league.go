@@ -2,7 +2,6 @@ package acquisition
 
 import (
 	"encoding/json"
-	"errors"
 )
 
 type LeagueResponse struct {
@@ -32,14 +31,4 @@ func GetLeagues() []LeagueItem {
 	json.Unmarshal(raw_data, &res)
 
 	return res.LeagueList
-}
-
-func GetLeagueId(name string, country string) (uint, error) {
-	league_list := GetLeagues()
-	for _, item := range league_list {
-		if item.League.Name == name && item.Country.Name == country {
-			return item.League.Id, nil
-		}
-	}
-	return 0, errors.New("no id found for name and country")
 }

@@ -1,12 +1,14 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"time"
 
 	acquisition "fas/acquisition"
 	transform "fas/transform"
 
 	"db/client"
+	db_getters "db/getters"
 
 	"gorm.io/gorm/clause"
 )
@@ -30,7 +32,6 @@ func syncFixtures(year int, league_id uint) {
 		insertFixture := transform.FixtureApiModelToDbModel(fixture)
 
 		// Insert (Update time, goals and result on conflict)
-		// Todo: Allow batch insert
 		db_client.Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "id"}},
 			DoUpdates: clause.AssignmentColumns([]string{"time", "home_team_goals", "away_team_goals", "result"}),
@@ -73,7 +74,7 @@ func syncTeams(year int, league_id uint) {
 
 func main() {
 
-	boolSyncLeagues := true
+	boolSyncLeagues := false
 	boolSyncTeams := true
 
 	// prozess Leagues
@@ -82,34 +83,32 @@ func main() {
 	}
 
 	// prozess Fixturesteam
-	//years := [6]int{2017, 2018, 2019, 2020, 2021, 2022}
-	years := [1]int{2022}
-	/*
-		leagues := [6]LeagueDescription{
-			{Name: "UEFA Champions League", Country: "World"},
-			{Name: "Serie A", Country: "Italy"},
-			{Name: "UEFA Europa League", Country: "World"},
-			{Name: "Bundesliga", Country: "Germany"},
-			{Name: "2. Bundesliga", Country: "Germany"},
-			{Name: "Premier League", Country: "England"},
-		}
-	*/
-	leagues := [1]LeagueDescription{
+	years := [2]int{2021, 2022}
+
+	leagues := [5]LeagueDescription{
 		{Name: "Bundesliga", Country: "Germany"},
+		{Name: "2. Bundesliga", Country: "Germany"},
+		{Name: "Premier League", Country: "England"},
+		{Name: "Serie A", Country: "Italy"},
+		{Name: "Eredivisie", Country: "Netherlands"},
 	}
 
 	for _, league := range leagues {
 		for _, year := range years {
-			// Get League ID
-			league_id, err := acquisition.GetLeagueId(league.Name, league.Country)
-			if err != nil {
-				log.Fatal(err)
-			}
-			syncTeams(year, league_id)
+			// Get League
+			league := db_getters.GetLeagueByNameAndCountry(league.Name, league.Country)
+			fmt.Println(league)
+
+			// sync teams if desired
 			if boolSyncTeams {
-				syncTeams(year, league_id)
+				syncTeams(year, league.Id)
 			}
-			syncFixtures(year, league_id)
+
+			//sync fixtures
+			syncFixtures(year, league.Id)
+
+			// avoid too many error
+			time.Sleep(10 * time.Second)
 		}
 	}
 

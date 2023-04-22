@@ -56,6 +56,8 @@ func GetFixtures(league_id uint, season int) []FixtureItem {
 	var parameter_map = map[string]string{"season": fmt.Sprint(season), "league": fmt.Sprint(league_id)}
 	raw_data := GetData("fixtures", parameter_map)
 	json.Unmarshal(raw_data, &res)
+	fmt.Println("Received data: ")
+	fmt.Println(res.FixtureList)
 
 	return res.FixtureList
 }

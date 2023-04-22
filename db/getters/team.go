@@ -4,7 +4,6 @@ import (
 	model "db/model"
 	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/antzucaro/matchr"
@@ -36,8 +35,7 @@ func GetTeamFromSimilarTeamName(similar_team_name string) (model.Team, error) {
 			min_str_distance = str_distance
 		}
 	}
-	fmt.Println("Most similar team name for: " + similar_team_name + " -> " + most_similar_team.Name +
-		". The score is: " + strconv.Itoa(min_str_distance))
+
 	if (most_similar_team == model.Team{}) {
 		return most_similar_team, errors.New("no similar team name found")
 	} else {

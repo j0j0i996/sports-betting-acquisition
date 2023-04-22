@@ -1,6 +1,7 @@
 package acquisition
 
 import (
+	"errors"
 	"log"
 	"math"
 	"reflect"
@@ -82,12 +83,19 @@ func modelData(data [][]string) []FixtureItem {
 					} else if f.Type().String() == "string" {
 						f.SetString(data[i][index])
 					} else if f.Type().String() == "time.Time" {
-						parsed_time, err := time.Parse("02/01/2006", data[i][index])
+						var parsed_time time.Time
+						var err error
+						if len(data[i][index]) == 10 {
+							parsed_time, err = time.Parse("02/01/2006", data[i][index])
+						} else if len(data[i][index]) == 8 {
+							parsed_time, err = time.Parse("02/01/06", data[i][index])
+						} else {
+							err = errors.New("unknown time format")
+						}
 						if err != nil {
 							panic(err)
 						}
 						f.Set(reflect.ValueOf(parsed_time))
-						//f.Set(reflect.ValueOf(data[i][index]))
 					} else {
 						log.Println("Unknown Field type " + f.Type().String())
 					}
@@ -104,14 +112,14 @@ func modelData(data [][]string) []FixtureItem {
 	return modelled_data
 }
 
-func GetHistoricData(year_code string, league string) []FixtureItem {
+func GetHistoricData(year_code string, league string) ([]FixtureItem, error) {
 	// Get Data from URL as slcie of slices, with first array being the header
 	data, err := fetchHistoricData(year_code, league)
 	if err != nil {
-		log.Fatal(err)
+		return []FixtureItem{}, err
 	}
 
 	modelledData := modelData(data)
 
-	return modelledData
+	return modelledData, nil
 }

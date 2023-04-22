@@ -12,7 +12,7 @@ var db_client = client.GetClient()
 // Get teams from db and cache
 func FindFixtureFromTeamIdsAndTimestampInDB(input_time time.Time, home model.Team, away model.Team) (model.Fixture, error) {
 	var fixtures []model.Fixture
-	db_client.Model(&model.Fixture{HomeTeamId: home.Id, AwayTeamId: away.Id}).Find(&fixtures)
+	db_client.Where("home_team_id = ? AND away_team_id = ?", home.Id, away.Id).Find(&fixtures)
 
 	// find fixture with closest timestamp
 	min_difference, _ := time.ParseDuration("96h")

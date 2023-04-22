@@ -7,6 +7,7 @@ This package acquires data from various datasources on football and writes them 
 ### create environment variables
 
 ```bash
+source ~/.bash_profile
 export XAPISPORTSKEY=[YOUR-API-KEY]
 export SPORTSBETTINGDB='host=localhost user=postgres password=postgres dbname=postgres port=5434'
 ```
