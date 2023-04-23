@@ -13,8 +13,8 @@ func main() {
 
 	boolSyncLeagues := false
 	boolSyncTeams := false
-	boolSyncSportsApi := true
-	boolSyncDataUk := false
+	boolSyncSportsApi := false
+	boolSyncDataUk := true
 
 	seasons := [1]string{
 		//"2020/21",
