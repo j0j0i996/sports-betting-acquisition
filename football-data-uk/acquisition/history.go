@@ -1,12 +1,12 @@
 package acquisition
 
 import (
-	"errors"
-	"log"
 	"math"
 	"reflect"
 	"strconv"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 type FixtureItem struct {
@@ -45,7 +45,7 @@ func isStringInSlice(str_to_check string, slice []string) bool {
 // filterColumnsByName filters an array of array by only keeping the columns
 // in which the name in the first row matches one of the col_names_to_keep input
 // It retuns the data as map, in which the key is the column name
-func modelData(data [][]string) []FixtureItem {
+func modelData(data [][]string) ([]FixtureItem, error) {
 
 	// Get index of columns
 	idx_map := make(map[string]int)
@@ -61,13 +61,14 @@ func modelData(data [][]string) []FixtureItem {
 		}
 	}
 	if len(cols_to_keep) != len(idx_map) {
-		log.Fatalln("One of the excpected column names is not part in csv header")
+		return []FixtureItem{}, errors.New("One of the excpected column names is not part in csv header")
 	}
 
 	// Model data
 	var modelled_data []FixtureItem
 	for i := 1; i < len(data); i++ {
 		fixture := FixtureItem{}
+		writeFixture := true
 		for fieldName, index := range idx_map {
 			v := reflect.ValueOf(&fixture).Elem()
 			f := v.FieldByName(fieldName)
@@ -75,11 +76,18 @@ func modelData(data [][]string) []FixtureItem {
 			if f.IsValid() {
 				if f.CanSet() {
 					if f.Type().String() == "float64" {
-						float_number, err := strconv.ParseFloat(data[i][index], 32)
-						if err != nil {
-							log.Fatalln("Could not convert String to Float")
+						// handle if no odds are available for a game
+						if data[i][index] == "" {
+							writeFixture = false
+						} else {
+							float_number, err := strconv.ParseFloat(data[i][index], 32)
+							if err != nil {
+								return []FixtureItem{}, errors.Wrap(
+									err,
+									"Could not convert string to float: "+data[i][index]+" for row: "+strconv.Itoa(i)+" and field name "+fieldName)
+							}
+							f.SetFloat(math.Floor(float_number*10000) / 10000)
 						}
-						f.SetFloat(math.Floor(float_number*10000) / 10000)
 					} else if f.Type().String() == "string" {
 						f.SetString(data[i][index])
 					} else if f.Type().String() == "time.Time" {
@@ -97,19 +105,21 @@ func modelData(data [][]string) []FixtureItem {
 						}
 						f.Set(reflect.ValueOf(parsed_time))
 					} else {
-						log.Println("Unknown Field type " + f.Type().String())
+						return []FixtureItem{}, errors.New("Unknown Field type " + f.Type().String())
 					}
 				} else {
-					log.Fatalln("Field is not settable")
+					return []FixtureItem{}, errors.New("Field is not settable")
 				}
 			} else {
-				log.Fatalln("Field not found")
+				return []FixtureItem{}, errors.New("Field not found")
 			}
 		}
-		modelled_data = append(modelled_data, fixture)
+		if writeFixture {
+			modelled_data = append(modelled_data, fixture)
+		}
 	}
 
-	return modelled_data
+	return modelled_data, nil
 }
 
 func GetHistoricData(year_code string, league string) ([]FixtureItem, error) {
@@ -119,7 +129,7 @@ func GetHistoricData(year_code string, league string) ([]FixtureItem, error) {
 		return []FixtureItem{}, err
 	}
 
-	modelledData := modelData(data)
+	modelledData, err := modelData(data)
 
-	return modelledData, nil
+	return modelledData, err
 }

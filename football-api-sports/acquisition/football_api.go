@@ -40,7 +40,7 @@ func executeRequest(req *http.Request) []byte {
 // GetData with optional API Params
 func GetData(endpoint string, parameter_map ...map[string]string) []byte {
 	jsonString, _ := json.Marshal(parameter_map)
-	fmt.Println("Requestion endpoint " + endpoint + " with Parameters " + string(jsonString))
+	fmt.Println("Requesting endpoint " + endpoint + " with Parameters " + string(jsonString))
 	req := buildRequest(endpoint)
 
 	if len(parameter_map) != 0 {
