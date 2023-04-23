@@ -20,7 +20,7 @@ type Team struct {
 }
 
 // GetLeages TODO
-func GetTeams(league_id uint, season int) []TeamItem {
+func GetTeams(league_id uint, season uint) []TeamItem {
 	var res TeamsResponse
 	// Get Data from API
 	var parameter_map = map[string]string{"season": fmt.Sprint(season), "league": fmt.Sprint(league_id)}

@@ -6,7 +6,7 @@ import (
 	model "db/model"
 )
 
-func FixtureApiModelToDbModel(api_fixture acquisition.FixtureItem) model.Fixture {
+func FixtureApiModelToDbModel(api_fixture acquisition.FixtureItem, year uint) model.Fixture {
 
 	// determine result
 	var result model.Result
@@ -24,6 +24,7 @@ func FixtureApiModelToDbModel(api_fixture acquisition.FixtureItem) model.Fixture
 	return model.Fixture{
 		Id:            api_fixture.Meta.Id,
 		Time:          api_fixture.Meta.Date,
+		Season:        year,
 		HomeTeamId:    api_fixture.Teams.Home.Id,
 		AwayTeamId:    api_fixture.Teams.Away.Id,
 		HomeTeamGoals: api_fixture.Goals.Home,

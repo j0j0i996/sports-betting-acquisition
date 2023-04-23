@@ -50,7 +50,7 @@ type Status struct {
 }
 
 // GetLeages TODO
-func GetFixtures(league_id uint, season int) []FixtureItem {
+func GetFixtures(league_id uint, season uint) []FixtureItem {
 	var res FixtureResponse
 	// Get Data from API
 	var parameter_map = map[string]string{"season": fmt.Sprint(season), "league": fmt.Sprint(league_id)}

@@ -15,13 +15,13 @@ import (
 
 var db_client = client.GetClient()
 
-func formatSeason(season string) int {
+func formatSeason(season string) uint {
 	yearString := strings.Split(season, "/")[0]
 	yearInt, err := strconv.Atoi(yearString)
 	if err != nil {
 		panic(err)
 	}
-	return yearInt
+	return uint(yearInt)
 }
 
 func SyncLeagues() {
@@ -39,11 +39,11 @@ func SyncLeagues() {
 	}
 }
 
-func syncTeams(year int, league_id uint) {
+func syncTeams(season uint, league_id uint) {
 	// fetches all leagues from a specific year and stores them in db
 
 	// Get Leagues as list
-	team_list := acquisition.GetTeams(league_id, year)
+	team_list := acquisition.GetTeams(league_id, season)
 
 	// transform and insert all fixtuers
 	for _, team := range team_list {
@@ -54,15 +54,15 @@ func syncTeams(year int, league_id uint) {
 	}
 }
 
-func syncFixtures(year int, league_id uint) {
+func syncFixtures(season uint, league_id uint) {
 	// fetches all fixtures from a specific year and league and stores them in db
 
 	// Get Fixtures as list
-	fixture_list := acquisition.GetFixtures(league_id, year)
+	fixture_list := acquisition.GetFixtures(league_id, season)
 
 	// transform and insert all fixtuers
 	for _, fixture := range fixture_list {
-		insertFixture := transform.FixtureApiModelToDbModel(fixture)
+		insertFixture := transform.FixtureApiModelToDbModel(fixture, season)
 
 		// Insert (Update time, goals and result on conflict)
 		db_client.Clauses(clause.OnConflict{
