@@ -67,7 +67,7 @@ func syncFixtures(season uint, league_id uint) {
 		// Insert (Update time, goals and result on conflict)
 		db_client.Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "id"}},
-			DoUpdates: clause.AssignmentColumns([]string{"time", "home_team_goals", "away_team_goals", "result"}),
+			UpdateAll: true,
 		}).Create(&insertFixture)
 	}
 }

@@ -40,7 +40,7 @@ func (r Result) Value() (driver.Value, error) {
 type Fixture struct {
 	Id            uint      `gorm:"primary_key"`
 	Time          time.Time `gorm:"not null; index"`
-	Season        uint      `gorm:"not null; index"`
+	Season        uint      `gorm:"index"` // todo: make not null
 	HomeTeamId    uint      `gorm:"not null; index"`
 	AwayTeamId    uint      `gorm:"not null; index"`
 	HomeTeamGoals nullable.Int8

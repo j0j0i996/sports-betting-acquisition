@@ -8,23 +8,27 @@ import (
 )
 
 func main() {
-	// Insert bookmakers
-	insert.InsertBookmaker("bet365", "B365")
 
+	boolInsertBookmaker := false
 	boolSyncLeagues := false
 	boolSyncTeams := false
-	boolSyncSportsApi := false
-	boolSyncDataUk := true
+	boolSyncSportsApi := true
+	boolSyncDataUk := false
 
-	seasons := [1]string{
-		//"2020/21",
-		//"2021/22",
+	// Insert bookmakers
+	if boolInsertBookmaker {
+		insert.InsertBookmaker("bet365", "B365")
+	}
+
+	seasons := [3]string{
+		"2020/21",
+		"2021/22",
 		"2022/23",
 	}
-	leagues := [1]model.League{
+	leagues := [3]model.League{
 		{Name: "Bundesliga", Country: "Germany"},
-		//{Name: "2. Bundesliga", Country: "Germany"},
-		//{Name: "Premier League", Country: "England"},
+		{Name: "2. Bundesliga", Country: "Germany"},
+		{Name: "Premier League", Country: "England"},
 		//{Name: "Serie A", Country: "Italy"},
 		//{Name: "Eredivisie", Country: "Netherlands"},
 	}
